@@ -8,6 +8,7 @@ Primitives for the purpose of govern ance may be a resource or atomic instructio
 - wallet or account?
 - data store or register?
 - oracle (external data interface?)
+- interface (?)
 
 ### Actors
 An actor is a unique resource in that it can sign a transaction (can be used to authorize function output, validate data) if consensus in the acting body is reached.  For an individual entity, it's a given that the actor wants to 'act'. For multi-actor entities, various consesus structure might be used.
