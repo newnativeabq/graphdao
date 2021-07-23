@@ -26,9 +26,15 @@ Data stores internal to the DAO can store start times, steps, votes, cache oracl
 An external data provider.  Includes user input, API fetches, and more.
 
 ## Instructions:
+Actions actors can take.
 - read-write
 - compare-and-swap
 - fetch-and-add
+- (debug) Print (I/O, stderr, etc.)
+
+**Functions required for transactions:**
+- Validator
+- Redeemer
 
 
 ## Higher Order Assemblies
@@ -41,6 +47,9 @@ Primitives may be combined into useful higher order structures to run a DAO.
 - Timer:
 - - Resources: actor, oracle, data store
 - - Instructions: read-write, compare-and-swap
+- Transaction:
+- - Resources: actor, wallet
+- - Instructions: redeemer, validator
 
 
 ### References
