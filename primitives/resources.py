@@ -30,10 +30,13 @@ class Function(BaseModel):
     
     def execute(self):
         try:
-            self.fn(self.kwargs)
+            return self.fn(**self.kwargs)
         except Exception as e:
             print('Error: could not execute function')
             raise e
+
+    def __call__(self):
+        return self.execute()
 
 #############################################
 ### Actors and Acting Bodies (Coalitions) ###
@@ -64,7 +67,7 @@ class Coalition(Actor):
                 add_general_signature(actor.identifier, actor.key, transaction)
             return transaction
         else:
-            raise ValueError(f'{self.identifer} Consensus not True')
+            raise ValueError(f'{self.identifier} Consensus not True')
 
 
 ######################
@@ -72,7 +75,10 @@ class Coalition(Actor):
 ######################
 
 class Data(Resource):
-    store: List[Any]
+    store: Any
+
+    def read(self, *args, **kwargs):
+        return self.store
 
 
 class DemoData(Data): 
@@ -88,38 +94,23 @@ class DemoData(Data):
                 self.store.append({key:kwargs[key]})
 
 
-class Interface(Resource):
-    data: Data
-    
-    def read(self, *args, **kwargs):
-        return self.data.read(*args, **kwargs)
-    
-    def write(self, *args, **kwargs):
-        return self.data.write(*args, **kwargs)
+class UserInput(Data):
+    message: Any
+    validator: Any
 
+    def prepare_message(self):
+        # If not a string, assume a callable
+        if type(self.message) == str:
+            return self.message
+        return self.message()
 
-class Oracle(Actor):
-    interface: Interface
-    data: Data
-        
-    def collect(self):
-        if self.consensus.resolve():
-            return self.interface.read()
-        
-    # Oracles have an associated action.
-    #  Register the Action to build the graph
-    @property
-    def action(self) -> Action:
-        return Action(
-            identifier=self.identifier,
-            resources=[self.interface, self.data],
-            function=self.build_oracle_function(),
-            actor=self.interface,
-        )
-    
-    def build_oracle_function(self):
-        return Function(
-            identifier=self.identifier,
-            kwargs={'interface': interface},
-            fn=build_read_from_interface(interface)
-        )
+    def validate(self, data):
+        if hasattr(self, 'validator'):
+            if self.validator is not None:
+                return self.validator(data)
+        return data
+
+    def read(self):
+        message = self.prepare_message()
+        self.store = input(message)
+        return super().read()

@@ -2,10 +2,8 @@
 
 from typing import List 
 
-from primitives.resources import Actor, Interface
 
-
-def check_all_true(actors: List[Actor], i=0) -> bool:
+def check_all_true(actors, i=0) -> bool:
     if i < len(actors):
         if actors[i].consensus.resolve():
             check_all_true(actors, i + 1)
@@ -17,8 +15,17 @@ def check_all_true(actors: List[Actor], i=0) -> bool:
 def return_true(): return True
 
 
-def build_read_from_interface(interface: Interface):
+def build_read_from_interface(interface):
     def read_from_interface(interface):
         return interface.read()
 
     return read_from_interface
+
+
+def null_fn(*args, **kwargs):
+    pass
+
+
+def requires(resource_a, resource_b):
+    assert resource_a is not None
+    assert resource_b is not None

@@ -1,9 +1,9 @@
 # actions.py
 
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Any
 
-from .resources import Actor, Resource, Interface, Function
+from .resources import Resource, Function
     
 
 class Action(BaseModel):
@@ -24,4 +24,6 @@ class Action(BaseModel):
         e = []
         e.extend([(self.actor.identifier, r.identifier, {'function':self.function}) for r in self.resources])
         return e
-        
+    
+    def execute(self):
+        return self.function.execute()
