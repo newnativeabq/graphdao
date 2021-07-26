@@ -2,24 +2,27 @@
 
 from typing import List 
 
-from primitives.resources import Coalition, Function
+from primitives.resources import Actor, Function
 from primitives.actions import Action
 
 from .simple_functions import requires
 
-def build_actor_consensus_requirements(coalition: Coalition) -> List[Action]:
+def build_actor_consensus_requirements(actor: Actor) -> List[Action]:
     requirements = []
-    for actor in coalition.actors:
-        requirements.append(
-            Action(
-                identifier=f'requires_{actor.identifier}',
-                actor=coalition,
-                resources=[actor],
-                function = Function(
-                    identifier=f'requires_{actor.identifier}',
-                    kwargs={'resource_a': coalition, 'resource_b': actor},
-                    fn=requires,
+    if hasattr(actor.consensus.fn, 'identifier'):
+        resources = actor.consensus.fn.kwargs.values()
+        for resource in resources:
+            print(resource, type(resource))
+            requirements.append(
+                Action(
+                    identifier=f'requires_{resource.identifier}',
+                    actor=actor,
+                    resources=[resource],
+                    function = Function(
+                        identifier=f'requires_{actor.identifier}',
+                        kwargs={'resource_a': actor, 'resource_b': resource},
+                        fn=requires,
+                    )
                 )
             )
-        )
     return requirements
