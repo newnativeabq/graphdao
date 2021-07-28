@@ -12,7 +12,7 @@ def build_actor_consensus_requirements(actor: Actor) -> List[Action]:
     if hasattr(actor.consensus.fn, 'identifier'):
         resources = actor.consensus.fn.kwargs.values()
         for resource in resources:
-            print(resource, type(resource))
+            # print(resource, type(resource))  # Debug
             requirements.append(
                 Action(
                     identifier=f'requires_{resource.identifier}',

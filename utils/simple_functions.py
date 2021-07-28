@@ -23,7 +23,9 @@ def build_read_from_interface(interface):
 
 
 def null_fn(*args, **kwargs):
-    pass
+    if len(args) > 0:
+        return args[0]
+    return None
 
 
 def requires(resource_a, resource_b):

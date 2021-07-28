@@ -3,6 +3,8 @@
 from pydantic import BaseModel
 from typing import List, Dict, Any
 
+import json
+
 from utils.signatures import add_general_signature
 
 #######################
@@ -32,7 +34,7 @@ class Function(BaseModel):
         try:
             return self.fn(**self.kwargs)
         except Exception as e:
-            print('Error: could not execute function')
+            print(f'Error: could not execute function {self.identifier}')
             raise e
 
     def __call__(self):
@@ -94,6 +96,20 @@ class DemoData(Data):
                 self.store.append({key:kwargs[key]})
 
 
+class FileData(Data):
+    path: str
+
+    def read(self, *args, **kwargs):
+        with open(self.path, 'r', newline='\n') as file:
+            return file.read(*args, **kwargs).splitlines()
+
+    def write(self, *args):
+        with open(self.path, 'a+', newline='\n') as file:
+            if len(args) > 0:
+                for arg in args:
+                    file.write(f'{arg}\n')
+
+
 class UserInput(Data):
     message: Any
     validator: Any
@@ -112,5 +128,5 @@ class UserInput(Data):
 
     def read(self):
         message = self.prepare_message()
-        self.store = input(message)
+        self.store = self.validate(input(message))
         return super().read()

@@ -11,7 +11,6 @@ from utils.oracle_helpers import build_oracle_requirements
 
 class Oracle(Actor):
     interface: Interface
-    data: Data
     # A limited cache is useful for situations where data will be read 
     #   a known number of times
     cache_reset: int = 1    
@@ -43,7 +42,7 @@ class Oracle(Actor):
     def fetch(self) -> Action:
         return Action(
                 identifier=self.identifier,
-                resources=[self.interface, self.data],
+                resources=[self.interface],
                 function=self.build_oracle_function(),
                 actor=self.interface,
             )
@@ -61,3 +60,17 @@ class Oracle(Actor):
             kwargs={'interface': self.interface},
             fn=build_read_from_interface(self.interface)
         )
+
+
+
+class ConsensusOracle(Oracle):
+    """Consensus Oracle
+        Returns signed consensus resolution as data instead of interface read.
+    """
+    
+    def collect(self, *args, **kwargs):
+        data = self.sign(
+            {'data': self.consensus.resolve(*args, **kwargs)}
+        )
+        self.cache_data(data)
+        return data

@@ -37,7 +37,14 @@ class DGraph():
         actions = build_actor_consensus_requirements(actor)
         for action in actions:
             self.register_action(action, verbose=verbose)
-        
+
+    def compose(self, b):
+        self.__g = nx.compose(self.__g, b.graph)
+    
+    @property
+    def graph(self):
+        return self.__g
+
     @property
     def num_nodes(self):
         return self.__g.number_of_nodes()
